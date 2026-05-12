@@ -873,10 +873,15 @@
             <div class="current-date-display" id="displayed-date">Loading...</div>
             <button class="date-btn" id="btn-next" disabled>Next Day →</button>
         </div>
-        <div style="font-size:0.82rem; color:var(--text-mid);">
-            Papers: <span class="count-badge" id="paper-count">—</span>
-            &nbsp;|&nbsp;
-            Editorials: <span class="count-badge" id="editorial-count">—</span>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <div style="font-size:0.82rem; color:var(--text-mid);">
+                Papers: <span class="count-badge" id="paper-count">—</span>
+                &nbsp;|&nbsp;
+                Editorials: <span class="count-badge" id="editorial-count">—</span>
+            </div>
+            <button class="date-btn" id="btn-ai-fetch" style="background:linear-gradient(135deg,#7b2ff7,#1a3c5e);font-size:0.82rem;display:flex;align-items:center;gap:6px;">
+                ✨ Auto-Fetch Today's Editorials
+            </button>
         </div>
     </div>
 
@@ -1018,6 +1023,9 @@
                 <a href="https://samakal.com/opinion" target="_blank" rel="noopener">সমকাল</a>
                 <a href="https://thefinancialexpress.com.bd/editorial" target="_blank" rel="noopener">Financial Express</a>
                 <a href="https://www.newagebd.net/editorial" target="_blank" rel="noopener">New Age Bangladesh</a>
+                <a href="https://www.tbsnews.net/thoughts/op-ed" target="_blank" rel="noopener">The Business Standard</a>
+                <a href="https://www.daily-sun.com/editorial" target="_blank" rel="noopener">Daily Sun</a>
+                <a href="https://mzamin.com/category.php?cat=16" target="_blank" rel="noopener">মানবজমিন</a>
             </div>
             <div class="footer-col">
                 <h3>Preparation</h3>
@@ -1040,6 +1048,50 @@
             </div>
         </div>
     </footer>
+
+    <!-- AI FETCH MODAL -->
+    <div id="ai-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:16px;max-width:700px;width:95%;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.4);">
+            <div style="padding:24px 28px;border-bottom:2px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between;">
+                <div>
+                    <h2 style="font-size:1.2rem;color:#1a3c5e;font-weight:800;">✨ AI Auto-Fetch Editorials</h2>
+                    <p style="font-size:0.82rem;color:#7f8c8d;margin-top:3px;">Claude will search the web and generate today's editorial summaries automatically.</p>
+                </div>
+                <button id="ai-modal-close" style="background:none;border:none;font-size:1.4rem;cursor:pointer;color:#aaa;line-height:1;">✕</button>
+            </div>
+            <div style="padding:24px 28px;" id="ai-modal-body">
+                <!-- Step 1: Paper selector -->
+                <div id="ai-step-select">
+                    <p style="font-size:0.9rem;color:#4a4a6a;margin-bottom:14px;font-weight:600;">Select newspapers to fetch for today:</p>
+                    <div id="ai-paper-checkboxes" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;"></div>
+                    <div style="display:flex;gap:10px;">
+                        <button id="ai-select-all" class="date-btn" style="font-size:0.8rem;padding:6px 14px;background:#27ae60;">✔ Select All</button>
+                        <button id="ai-fetch-start" class="date-btn" style="background:linear-gradient(135deg,#7b2ff7,#1a3c5e);font-size:0.88rem;padding:8px 22px;">🚀 Start Fetching</button>
+                    </div>
+                </div>
+                <!-- Step 2: Progress -->
+                <div id="ai-step-progress" style="display:none;">
+                    <div id="ai-progress-log" style="background:#f8f9fa;border-radius:10px;padding:16px;font-size:0.82rem;color:#34495e;line-height:1.9;max-height:300px;overflow-y:auto;font-family:monospace;"></div>
+                    <div style="margin-top:14px;">
+                        <div style="background:#e8ecef;border-radius:999px;height:8px;overflow:hidden;">
+                            <div id="ai-progress-bar" style="background:linear-gradient(90deg,#7b2ff7,#1a3c5e);height:100%;width:0%;transition:width 0.4s ease;border-radius:999px;"></div>
+                        </div>
+                        <p id="ai-progress-text" style="font-size:0.78rem;color:#7f8c8d;margin-top:6px;text-align:center;">Initializing...</p>
+                    </div>
+                </div>
+                <!-- Step 3: Results -->
+                <div id="ai-step-results" style="display:none;">
+                    <p style="font-size:0.88rem;color:#27ae60;font-weight:700;margin-bottom:12px;">✅ Fetch complete! Review and add to site:</p>
+                    <div id="ai-results-container" style="display:flex;flex-direction:column;gap:12px;max-height:350px;overflow-y:auto;"></div>
+                    <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap;">
+                        <button id="ai-inject-all" class="date-btn" style="background:#27ae60;font-size:0.88rem;">✅ Add All to Today's Feed</button>
+                        <button id="ai-copy-js" class="date-btn" style="background:#7b2ff7;font-size:0.88rem;">📋 Copy as JS Code</button>
+                        <button id="ai-modal-reset" class="date-btn" style="background:#7f8c8d;font-size:0.88rem;">↩ Fetch Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- APP SCRIPT -->
     <script src="app.js"></script>
