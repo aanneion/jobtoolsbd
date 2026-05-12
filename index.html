@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>সম্পাদকীয় হাব | Editorial Hub Bangladesh</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary:      #1a3c5e;
+            --secondary:    #c0392b;
+            --accent:       #f39c12;
+            --light-bg:     #f4f6f8;
+            --card-bg:      #ffffff;
+            --text-dark:    #1a1a2e;
+            --text-mid:     #4a4a6a;
+            --text-light:   #7f8c8d;
+            --border:       #dde3ea;
+            --success:      #27ae60;
+            --shadow:       0 4px 15px rgba(0,0,0,0.08);
+            --shadow-hover: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--light-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* ===== TICKER ===== */
+        .ticker-bar {
+            background: var(--secondary);
+            color: white;
+            padding: 7px 0;
+            overflow: hidden;
+            font-size: 0.82rem;
+            font-weight: 500;
+        }
+        .ticker-inner {
+            display: flex;
+            align-items: center;
+        }
+        .ticker-label {
+            background: var(--primary);
+            color: white;
+            padding: 2px 14px;
+            white-space: nowrap;
+            font-weight: 700;
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            margin-right: 0;
+            flex-shrink: 0;
+            letter-spacing: 0.5px;
+        }
+        .ticker-track {
+            overflow: hidden;
+            flex: 1;
+        }
+        .ticker-text {
+            white-space: nowrap;
+            display: inline-block;
+            padding-left: 40px;
+            animation: ticker 40s linear infinite;
+        }
+        @keyframes ticker {
+            0%   { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, #0d2840 100%);
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--secondary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: white;
+            border: 2px solid var(--accent);
+            flex-shrink: 0;
+        }
+        .logo-text h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+        .logo-text span {
+            font-size: 0.78rem;
+            color: rgba(255,255,255,0.6);
+            display: block;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .header-meta {
+            text-align: right;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.7);
+            line-height: 1.9;
+        }
+        #live-date {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.92rem;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            gap: 2px;
+            flex-wrap: wrap;
+        }
+        .nav-link {
+            color: rgba(255,255,255,0.82);
+            text-decoration: none;
+            padding: 13px 17px;
+            font-size: 0.87rem;
+            font-weight: 600;
+            border-bottom: 3px solid transparent;
+            transition: all 0.25s;
+            white-space: nowrap;
+        }
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            background: rgba(255,255,255,0.06);
+        }
+
+        /* ===== DATE BAR ===== */
+        .date-bar {
+            background: white;
+            border-bottom: 3px solid var(--accent);
+            padding: 12px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .date-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        .date-nav {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .date-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 7px 16px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .date-btn:hover:not(:disabled) { background: var(--secondary); }
+        .date-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .current-date-display {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary);
+            background: var(--light-bg);
+            padding: 6px 18px;
+            border-radius: 6px;
+            border: 1.5px solid var(--border);
+            min-width: 220px;
+            text-align: center;
+        }
+        .count-badge {
+            background: var(--success);
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 9px;
+            border-radius: 10px;
+            margin-left: 4px;
+        }
+
+        /* ===== MAIN LAYOUT ===== */
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 28px;
+            align-items: start;
+        }
+
+        /* ===== SECTION TITLE ===== */
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .section-title::before {
+            content: '';
+            width: 5px;
+            height: 24px;
+            background: var(--secondary);
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+        .section-title h2 {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .section-badge {
+            background: var(--accent);
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 9px;
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+
+        /* ===== FILTER BAR ===== */
+        .filter-bar {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 13px 18px;
+            margin-bottom: 22px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            box-shadow: var(--shadow);
+        }
+        .filter-label {
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-right: 4px;
+        }
+        .filter-btn {
+            padding: 5px 13px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border: 1.5px solid var(--border);
+            background: white;
+            color: var(--text-mid);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        .filter-btn.active {
+            background: var(--secondary);
+            color: white;
+            border-color: var(--secondary);
+        }
+
+        /* ===== EDITORIAL CARD ===== */
+        .editorial-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            margin-bottom: 22px;
+            overflow: hidden;
+            transition: box-shadow 0.3s, transform 0.2s;
+        }
+        .editorial-card:hover {
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Card Header */
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 13px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+        .paper-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .paper-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .paper-name {
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+        }
+        .card-meta-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .category-tag {
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+        .tag-economy     { background:#fef9e7; color:#e67e22; border:1px solid #f0d080; }
+        .tag-politics    { background:#fdf2f8; color:#8e44ad; border:1px solid #d7a9e8; }
+        .tag-intl        { background:#eaf4fb; color:#2980b9; border:1px solid #a3cde8; }
+        .tag-society     { background:#eafaf1; color:#27ae60; border:1px solid #a0d9b4; }
+        .tag-education   { background:#fef5e4; color:#ca6f1e; border:1px solid #f0b27a; }
+        .tag-environment { background:#e8f8f5; color:#1abc9c; border:1px solid #76d7c4; }
+        .tag-security    { background:#fdedec; color:#c0392b; border:1px solid #f1948a; }
+        .tag-health      { background:#f0fff4; color:#196f3d; border:1px solid #82e0aa; }
+
+        .card-date-stamp {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        /* Card Body */
+        .card-body { padding: 20px 22px; }
+
+        .editorial-title {
+            font-size: 1.18rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1.45;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .editorial-title:hover { color: var(--secondary); }
+
+        .editorial-translation {
+            font-size: 0.87rem;
+            color: var(--text-mid);
+            font-style: italic;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        /* Summary Box */
+        .summary-box {
+            background: linear-gradient(135deg, #f8faff, #eef2ff);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            padding: 14px 16px;
+            margin-bottom: 16px;
+        }
+        .summary-box-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .summary-text {
+            font-size: 0.86rem;
+            color: var(--text-mid);
+            line-height: 1.7;
+        }
+
+        /* Key Points */
+        .key-points-box { margin-top: 14px; }
+        .key-points-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
+        }
+        .key-points-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .key-points-list li {
+            font-size: 0.84rem;
+            color: var(--text-mid);
+            padding-left: 16px;
+            position: relative;
+            line-height: 1.5;
+        }
+        .key-points-list li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        /* Shimmer Placeholder */
+        .placeholder-line {
+            height: 11px;
+            border-radius: 6px;
+            background: linear-gradient(
+                90deg,
+                #e8ecf0 25%,
+                #f4f6f8 50%,
+                #e8ecf0 75%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            margin-bottom: 8px;
+        }
+        .placeholder-line.w-100 { width: 100%; }
+        .placeholder-line.w-85  { width: 85%;  }
+        .placeholder-line.w-70  { width: 70%;  }
+        .placeholder-line.w-55  { width: 55%;  }
+        @keyframes shimmer {
+            0%   { background-position:  200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .placeholder-note {
+            font-size: 0.75rem;
+            color: #856404;
+            font-style: italic;
+            margin-top: 8px;
+            padding: 6px 10px;
+            background: #fff8e1;
+            border-radius: 5px;
+            border-left: 3px solid var(--accent);
+        }
+
+        /* Card Footer */
+        .card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 22px;
+            background: #fafbfc;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .importance-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+        .importance-label { font-weight: 600; }
+        .stars { display: flex; gap: 2px; }
+        .star { color: #bdc3c7; font-size: 0.9rem; }
+        .star.filled { color: var(--accent); }
+        .importance-text { font-size: 0.73rem; }
+        .read-link {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            padding: 6px 14px;
+            border: 1.5px solid var(--primary);
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .read-link:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* ===== STATES ===== */
+
+        /* Loading Skeleton */
+        .skeleton-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 22px;
+            margin-bottom: 22px;
+        }
+        .skeleton-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .skeleton-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #e8ecf0;
+            flex-shrink: 0;
+        }
+
+        /* Empty State */
+        .empty-state {
+            background: white;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 60px 30px;
+            text-align: center;
+        }
+        .empty-icon  { font-size: 3rem; margin-bottom: 14px; }
+        .empty-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+        .empty-sub {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* Error State */
+        .error-state {
+            background: #fff5f5;
+            border: 2px dashed #f1948a;
+            border-radius: 12px;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .error-icon  { font-size: 2.5rem; margin-bottom: 12px; }
+        .error-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+        .error-sub {
+            font-size: 0.83rem;
+            color: var(--text-mid);
+            line-height: 1.6;
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+        .sidebar-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .sidebar-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 18px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            letter-spacing: 0.4px;
+        }
+
+        /* Search */
+        .search-wrap { padding: 14px 18px; }
+        .search-group {
+            display: flex;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .search-input {
+            flex: 1;
+            border: none;
+            padding: 9px 13px;
+            font-size: 0.84rem;
+            outline: none;
+            background: var(--light-bg);
+            color: var(--text-dark);
+        }
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 9px 16px;
+            cursor: pointer;
+            font-size: 0.84rem;
+            font-weight: 700;
+            transition: background 0.2s;
+        }
+        .search-btn:hover { background: var(--secondary); }
+
+        /* Newspaper Index */
+        .newspaper-index { padding: 10px 14px; }
+        .newspaper-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 9px 10px;
+            border-radius: 8px;
+            margin-bottom: 3px;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+        .newspaper-row:hover { background: var(--light-bg); }
+        .newspaper-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .np-dot {
+            width: 11px; height: 11px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .np-name {
+            font-size: 0.84rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        .np-lang {
+            font-size: 0.72rem;
+            color: var(--text-light);
+        }
+        .np-count {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
+            min-width: 28px;
+            text-align: center;
+        }
+        .np-count.none {
+            background: #ecf0f1;
+            color: #95a5a6;
+        }
+
+        /* Archive */
+        .archive-list { padding: 4px 0; }
+        .archive-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 18px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .archive-item:last-child { border-bottom: none; }
+        .archive-item:hover { background: var(--light-bg); }
+        .archive-item.is-active { background: #fff8f0; }
+        .archive-date-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        .archive-item.is-active .archive-date-text { color: var(--secondary); }
+        .archive-day-name {
+            font-size: 0.73rem;
+            color: var(--text-light);
+            display: block;
+            margin-top: 1px;
+        }
+        .archive-count-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 9px;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
+        }
+        .archive-count-badge.none {
+            background: #ecf0f1;
+            color: #aaa;
+        }
+
+        /* Exam Tips */
+        .exam-tips { padding: 14px 18px; }
+        .tip-row {
+            display: flex;
+            gap: 10px;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+            border-bottom: 1px dashed var(--border);
+        }
+        .tip-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .tip-icon { font-size: 1.1rem; flex-shrink: 0; }
+        .tip-text { font-size: 0.8rem; color: var(--text-mid); line-height: 1.55; }
+        .tip-text strong {
+            display: block;
+            color: var(--text-dark);
+            font-size: 0.82rem;
+            margin-bottom: 2px;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: var(--primary);
+            color: rgba(255,255,255,0.78);
+            margin-top: 50px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            padding: 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .footer-col h3 {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent);
+            display: inline-block;
+        }
+        .footer-col p,
+        .footer-col a {
+            font-size: 0.82rem;
+            line-height: 1.9;
+            color: rgba(255,255,255,0.68);
+            text-decoration: none;
+            display: block;
+        }
+        .footer-col a:hover { color: var(--accent); }
+        .footer-bottom {
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .footer-bottom span { color: var(--accent); }
+        .footer-links a {
+            color: rgba(255,255,255,0.55);
+            text-decoration: none;
+            margin-left: 16px;
+            font-size: 0.76rem;
+        }
+        .footer-links a:hover { color: var(--accent); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .sidebar {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 700px) {
+            .header-top {
+                flex-direction: column;
+                padding: 16px 20px;
+                gap: 10px;
+                text-align: center;
+            }
+            .header-meta { text-align: center; }
+            .navbar { padding: 0 10px; justify-content: center; }
+            .nav-link { padding: 10px 11px; font-size: 0.8rem; }
+            .date-bar { padding: 12px 20px; flex-direction: column; align-items: flex-start; }
+            .container { padding: 18px 14px; }
+            .sidebar { grid-template-columns: 1fr; }
+            .footer-grid {
+                grid-template-columns: 1fr;
+                padding: 24px 20px;
+                gap: 24px;
+            }
+            .footer-bottom {
+                flex-direction: column;
+                padding: 14px 20px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TICKER -->
+    <div class="ticker-bar">
+        <div class="ticker-inner">
+            <div class="ticker-label">📰 Today</div>
+            <div class="ticker-track">
+                <div class="ticker-text" id="ticker-content">
+                    Loading today's editorials...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-top">
+            <div class="logo-area">
+                <div class="logo-icon">সএ</div>
+                <div class="logo-text">
+                    <h1>সম্পাদকীয় হাব</h1>
+                    <span>Editorial Hub Bangladesh</span>
+                </div>
+            </div>
+            <div class="header-meta">
+                <span id="live-date">📅 Loading...</span><br>
+                <span id="live-bangla-date" style="color:rgba(255,255,255,0.65); font-size:0.78rem;">—</span><br>
+                <span id="live-time" style="color:rgba(255,255,255,0.6); font-size:0.76rem;">🕐 —</span>
+            </div>
+        </div>
+        <nav class="navbar">
+            <a href="#" class="nav-link active">🏠 Home</a>
+            <a href="#" class="nav-link">📰 Today's Editorial</a>
+            <a href="#" class="nav-link">📂 Archive</a>
+            <a href="#" class="nav-link">📚 BCS Prep</a>
+            <a href="#" class="nav-link">🏦 Bank Prep</a>
+            <a href="#" class="nav-link">📖 Vocabulary</a>
+            <a href="#" class="nav-link">📝 Quiz</a>
+            <a href="#" class="nav-link">ℹ️ About</a>
+        </nav>
+    </header>
+
+    <!-- DATE BAR -->
+    <div class="date-bar">
+        <div class="date-label">📅 Viewing Editorials For:</div>
+        <div class="date-nav">
+            <button class="date-btn" id="btn-prev">← Previous Day</button>
+            <div class="current-date-display" id="displayed-date">Loading...</div>
+            <button class="date-btn" id="btn-next" disabled>Next Day →</button>
+        </div>
+        <div style="font-size:0.82rem; color:var(--text-mid);">
+            Papers: <span class="count-badge" id="paper-count">—</span>
+            &nbsp;|&nbsp;
+            Editorials: <span class="count-badge" id="editorial-count">—</span>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="container">
+        <div class="main-grid">
+
+            <!-- LEFT: FEED -->
+            <div class="editorial-feed">
+
+                <div class="section-title">
+                    <h2>Today's Editorials</h2>
+                    <span class="section-badge" id="section-badge">—</span>
+                </div>
+
+                <!-- FILTER BAR -->
+                <div class="filter-bar" id="filter-bar">
+                    <span class="filter-label">Filter:</span>
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="economy">Economy</button>
+                    <button class="filter-btn" data-filter="politics">Politics</button>
+                    <button class="filter-btn" data-filter="international">International</button>
+                    <button class="filter-btn" data-filter="society">Society</button>
+                    <button class="filter-btn" data-filter="education">Education</button>
+                    <button class="filter-btn" data-filter="environment">Environment</button>
+                    <button class="filter-btn" data-filter="security">Security</button>
+                    <button class="filter-btn" data-filter="health">Health</button>
+                    <button class="filter-btn" data-filter="bangla">Bangla Papers</button>
+                    <button class="filter-btn" data-filter="english">English Papers</button>
+                </div>
+
+                <!-- CARDS INJECT HERE -->
+                <div id="editorial-feed-container">
+                    <!-- Populated by app.js -->
+                </div>
+
+            </div>
+            <!-- END FEED -->
+
+            <!-- RIGHT: SIDEBAR -->
+            <aside class="sidebar">
+
+                <!-- Search -->
+                <div class="sidebar-card">
+                    <div class="sidebar-header">🔍 Search Editorials</div>
+                    <div class="search-wrap">
+                        <div class="search-group">
+                            <input
+                                class="search-input"
+                                type="text"
+                                id="search-input"
+                                placeholder="Topic, keyword, paper..."
+                            >
+                            <button class="search-btn" id="search-btn">Go</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Newspaper Index -->
+                <div class="sidebar-card">
+                    <div class="sidebar-header">📰 Newspapers Covered</div>
+                    <div class="newspaper-index" id="newspaper-index">
+                        <!-- Populated by app.js -->
+                    </div>
+                </div>
+
+                <!-- Archive -->
+                <div class="sidebar-card">
+                    <div class="sidebar-header">📂 Archive — Recent Dates</div>
+                    <div class="archive-list" id="archive-list">
+                        <!-- Populated by app.js -->
+                    </div>
+                </div>
+
+                <!-- Tips -->
+                <div class="sidebar-card">
+                    <div class="sidebar-header">💡 Exam Reading Tips</div>
+                    <div class="exam-tips">
+                        <div class="tip-row">
+                            <div class="tip-icon">🎯</div>
+                            <div class="tip-text">
+                                <strong>Focus on Facts & Figures</strong>
+                                Numbers, org names, law titles, and dates in editorials are direct exam questions.
+                            </div>
+                        </div>
+                        <div class="tip-row">
+                            <div class="tip-icon">⭐</div>
+                            <div class="tip-text">
+                                <strong>★★★★★ Cards First</strong>
+                                "Must Read" rated editorials have the highest probability in BCS & Bank exams.
+                            </div>
+                        </div>
+                        <div class="tip-row">
+                            <div class="tip-icon">📝</div>
+                            <div class="tip-text">
+                                <strong>Write the Key Points</strong>
+                                Points repeated across multiple papers = very high exam probability.
+                            </div>
+                        </div>
+                        <div class="tip-row">
+                            <div class="tip-icon">🔄</div>
+                            <div class="tip-text">
+                                <strong>Revisit Last 7 Days</strong>
+                                Trending topics across multiple days are almost certainly exam material.
+                            </div>
+                        </div>
+                        <div class="tip-row">
+                            <div class="tip-icon">🗓️</div>
+                            <div class="tip-text">
+                                <strong>15 Minutes Daily</strong>
+                                Consistency beats cramming. Read every morning before starting your day.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-grid">
+            <div class="footer-col">
+                <h3>সম্পাদকীয় হাব</h3>
+                <p>All major Bangladesh newspaper editorials — with plain-language summaries and exam-relevant key points — in one place, every day.</p>
+                <br>
+                <p>📧 contact@editorialhub.com.bd</p>
+                <p>📍 Dhaka, Bangladesh</p>
+            </div>
+            <div class="footer-col">
+                <h3>Newspapers</h3>
+                <a href="https://www.prothomalo.com/opinion/editorial" target="_blank" rel="noopener">প্রথম আলো</a>
+                <a href="https://www.thedailystar.net/opinion/editorial" target="_blank" rel="noopener">The Daily Star</a>
+                <a href="https://www.jugantor.com/todays-paper/editorial" target="_blank" rel="noopener">যুগান্তর</a>
+                <a href="https://www.kalerkantho.com/print-edition/editorial" target="_blank" rel="noopener">কালের কণ্ঠ</a>
+                <a href="https://www.ittefaq.com.bd/opinion" target="_blank" rel="noopener">দৈনিক ইত্তেফাক</a>
+                <a href="https://samakal.com/opinion" target="_blank" rel="noopener">সমকাল</a>
+                <a href="https://thefinancialexpress.com.bd/editorial" target="_blank" rel="noopener">Financial Express</a>
+                <a href="https://www.newagebd.net/editorial" target="_blank" rel="noopener">New Age Bangladesh</a>
+            </div>
+            <div class="footer-col">
+                <h3>Preparation</h3>
+                <a href="#">BCS Preparation</a>
+                <a href="#">Bank Job Preparation</a>
+                <a href="#">Primary Teacher Exam</a>
+                <a href="#">NTRCA Preparation</a>
+                <a href="#">Editorial Archive</a>
+                <a href="#">Vocabulary Builder</a>
+                <a href="#">Daily Quiz</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div>© 2025 সম্পাদকীয় হাব — Editorial Hub Bangladesh</div>
+            <div>Made with ❤️ for <span>Bangladeshi Job Examinees</span></div>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Disclaimer</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- APP SCRIPT -->
+    <script src="app.js"></script>
+
+</body>
+</html>
