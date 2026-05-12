@@ -1,15 +1,367 @@
 /* ============================================================
    EDITORIAL HUB BANGLADESH — app.js
-   Phase 2: Reads data.json → renders everything dynamically
+   Data is embedded directly — no fetch() needed.
+   Just edit the EDITORIAL_DATA object below daily.
    ============================================================ */
 
 'use strict';
 
-/* ── CONFIG ───────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════
+   YOUR DAILY CONTENT — EDIT THIS EVERY DAY
+   
+   HOW TO ADD A NEW EDITORIAL:
+   1. Copy one {} block from the editorials array
+   2. Paste it at the TOP of the array (latest first)
+   3. Fill in all fields
+   4. Save → push to GitHub → done
+══════════════════════════════════════════════════════════ */
+
+const EDITORIAL_DATA = {
+
+    newspapers: [
+        {
+            id:           'prothom-alo',
+            name_bangla:  'প্রথম আলো',
+            name_english: 'Prothom Alo',
+            color:        '#e74c3c',
+            language:     'bangla',
+            editorial_url:'https://www.prothomalo.com/opinion/editorial'
+        },
+        {
+            id:           'daily-star',
+            name_bangla:  '',
+            name_english: 'The Daily Star',
+            color:        '#2980b9',
+            language:     'english',
+            editorial_url:'https://www.thedailystar.net/opinion/editorial'
+        },
+        {
+            id:           'jugantor',
+            name_bangla:  'যুগান্তর',
+            name_english: 'Jugantor',
+            color:        '#27ae60',
+            language:     'bangla',
+            editorial_url:'https://www.jugantor.com/todays-paper/editorial'
+        },
+        {
+            id:           'kaler-kantho',
+            name_bangla:  'কালের কণ্ঠ',
+            name_english: 'Kaler Kantho',
+            color:        '#8e44ad',
+            language:     'bangla',
+            editorial_url:'https://www.kalerkantho.com/print-edition/editorial'
+        },
+        {
+            id:           'ittefaq',
+            name_bangla:  'দৈনিক ইত্তেফাক',
+            name_english: 'Daily Ittefaq',
+            color:        '#c0392b',
+            language:     'bangla',
+            editorial_url:'https://www.ittefaq.com.bd/opinion'
+        },
+        {
+            id:           'samakal',
+            name_bangla:  'সমকাল',
+            name_english: 'Samakal',
+            color:        '#e67e22',
+            language:     'bangla',
+            editorial_url:'https://samakal.com/opinion'
+        },
+        {
+            id:           'financial-express',
+            name_bangla:  '',
+            name_english: 'The Financial Express',
+            color:        '#f39c12',
+            language:     'english',
+            editorial_url:'https://thefinancialexpress.com.bd/editorial'
+        },
+        {
+            id:           'new-age',
+            name_bangla:  '',
+            name_english: 'New Age Bangladesh',
+            color:        '#16a085',
+            language:     'english',
+            editorial_url:'https://www.newagebd.net/editorial'
+        }
+    ],
+
+    /* ══════════════════════════════════════════════════
+       EDITORIALS ARRAY
+       
+       FIELDS EXPLAINED:
+       ─────────────────
+       id                → unique number, increment each time
+       date              → "YYYY-MM-DD" format, must be exact
+       
+       paper → {
+         name_bangla     → Bangla name (empty "" if English paper)
+         name_english    → English name (always fill)
+         color           → hex color code for that newspaper
+         language        → "bangla" or "english"
+       }
+       
+       category          → one of:
+                           "economy" | "politics" | "international"
+                           "society" | "education" | "environment"
+                           "security" | "health"
+       
+       headline_original    → paste exact headline from newspaper
+       headline_translation → English translation (only if Bangla paper)
+                              leave "" for English papers
+       
+       summary           → write 3-5 sentences in simple language
+                           THIS IS YOUR TEAM'S WRITING, not copied
+       
+       key_points        → array of 4-6 exam-relevant bullet points
+                           focus on facts, figures, laws, org names
+       
+       importance        → number 1 to 5
+                           1 = Low
+                           2 = Below Average  
+                           3 = Medium
+                           4 = Very High
+                           5 = Must Read
+       
+       original_url      → direct link to editorial on newspaper site
+                           leave "" if not available yet
+    ══════════════════════════════════════════════════ */
+
+    editorials: [
+
+        /* ─────────────────────────────────────────
+           DATE: TODAY — Fill these every morning
+           Copy a block, change the fields, save.
+        ───────────────────────────────────────── */
+
+        {
+            id:                   '001',
+            date:                 '2025-06-19',
+            paper: {
+                name_bangla:      'প্রথম আলো',
+                name_english:     'Prothom Alo',
+                color:            '#e74c3c',
+                language:         'bangla'
+            },
+            category:             'economy',
+            headline_original:    'আপনার আজকের প্রথম আলো সম্পাদকীয় শিরোনাম এখানে লিখুন',
+            headline_translation: 'English translation of the headline goes here',
+            summary:              'এখানে ৩-৫ বাক্যে সম্পাদকীয়র সারসংক্ষেপ লিখুন। সহজ ভাষায় লিখুন যাতে পরীক্ষার্থীরা সহজে বুঝতে পারেন। মূল বিষয়গুলো তুলে ধরুন।',
+            key_points: [
+                'গুরুত্বপূর্ণ তথ্য বা পরিসংখ্যান এখানে লিখুন',
+                'কোনো আইন বা সংস্থার নাম উল্লেখ থাকলে লিখুন',
+                'মূল সমস্যা বা সমাধান কী — সেটি লিখুন',
+                'পরীক্ষার জন্য গুরুত্বপূর্ণ তথ্য এখানে',
+                'আরেকটি গুরুত্বপূর্ণ পয়েন্ট'
+            ],
+            importance:           4,
+            original_url:         'https://www.prothomalo.com/opinion/editorial'
+        },
+
+        {
+            id:                   '002',
+            date:                 '2025-06-19',
+            paper: {
+                name_bangla:      '',
+                name_english:     'The Daily Star',
+                color:            '#2980b9',
+                language:         'english'
+            },
+            category:             'international',
+            headline_original:    'Paste The Daily Star editorial headline here',
+            headline_translation: '',
+            summary:              'Write a 3-5 sentence summary of the Daily Star editorial here. Use simple language. Focus on what the editorial argues and what solution it proposes.',
+            key_points: [
+                'Key fact or statistic from the editorial',
+                'Name of any law, treaty, or organization mentioned',
+                'Main problem the editorial identifies',
+                'Solution or recommendation the editorial makes',
+                'Any important date or figure mentioned'
+            ],
+            importance:           5,
+            original_url:         'https://www.thedailystar.net/opinion/editorial'
+        },
+
+        {
+            id:                   '003',
+            date:                 '2025-06-19',
+            paper: {
+                name_bangla:      'যুগান্তর',
+                name_english:     'Jugantor',
+                color:            '#27ae60',
+                language:         'bangla'
+            },
+            category:             'society',
+            headline_original:    'যুগান্তর সম্পাদকীয় শিরোনাম এখানে লিখুন',
+            headline_translation: 'English translation here',
+            summary:              'সারসংক্ষেপ এখানে লিখুন।',
+            key_points: [
+                'মূল তথ্য ১',
+                'মূল তথ্য ২',
+                'মূল তথ্য ৩',
+                'মূল তথ্য ৪'
+            ],
+            importance:           3,
+            original_url:         'https://www.jugantor.com/todays-paper/editorial'
+        },
+
+        {
+            id:                   '004',
+            date:                 '2025-06-19',
+            paper: {
+                name_bangla:      'কালের কণ্ঠ',
+                name_english:     'Kaler Kantho',
+                color:            '#8e44ad',
+                language:         'bangla'
+            },
+            category:             'environment',
+            headline_original:    'কালের কণ্ঠ সম্পাদকীয় শিরোনাম এখানে লিখুন',
+            headline_translation: 'English translation here',
+            summary:              'সারসংক্ষেপ এখানে লিখুন।',
+            key_points: [
+                'মূল তথ্য ১',
+                'মূল তথ্য ২',
+                'মূল তথ্য ৩',
+                'মূল তথ্য ৪'
+            ],
+            importance:           4,
+            original_url:         'https://www.kalerkantho.com/print-edition/editorial'
+        },
+
+        {
+            id:                   '005',
+            date:                 '2025-06-19',
+            paper: {
+                name_bangla:      'দৈনিক ইত্তেফাক',
+                name_english:     'Daily Ittefaq',
+                color:            '#c0392b',
+                language:         'bangla'
+            },
+            category:             'education',
+            headline_original:    'ইত্তেফাক সম্পাদকীয় শিরোনাম এখানে লিখুন',
+            headline_translation: 'English translation here',
+            summary:              'সারসংক্ষেপ এখানে লিখুন।',
+            key_points: [
+                'মূল তথ্য ১',
+                'মূল তথ্য ২',
+                'মূল তথ্য ৩',
+                'মূল তথ্য ৪'
+            ],
+            importance:           3,
+            original_url:         'https://www.ittefaq.com.bd/opinion'
+        },
+
+        {
+            id:                   '006',
+            date:                 '2025-06-19',
+            paper: {
+                name_bangla:      'সমকাল',
+                name_english:     'Samakal',
+                color:            '#e67e22',
+                language:         'bangla'
+            },
+            category:             'politics',
+            headline_original:    'সমকাল সম্পাদকীয় শিরোনাম এখানে লিখুন',
+            headline_translation: 'English translation here',
+            summary:              'সারসংক্ষেপ এখানে লিখুন।',
+            key_points: [
+                'মূল তথ্য ১',
+                'মূল তথ্য ২',
+                'মূল তথ্য ৩',
+                'মূল তথ্য ৪'
+            ],
+            importance:           4,
+            original_url:         'https://samakal.com/opinion'
+        },
+
+        {
+            id:                   '007',
+            date:                 '2025-06-19',
+            paper: {
+                name_bangla:      '',
+                name_english:     'The Financial Express',
+                color:            '#f39c12',
+                language:         'english'
+            },
+            category:             'economy',
+            headline_original:    'Paste Financial Express editorial headline here',
+            headline_translation: '',
+            summary:              'Write summary here.',
+            key_points: [
+                'Key point 1',
+                'Key point 2',
+                'Key point 3',
+                'Key point 4'
+            ],
+            importance:           4,
+            original_url:         'https://thefinancialexpress.com.bd/editorial'
+        },
+
+        {
+            id:                   '008',
+            date:                 '2025-06-19',
+            paper: {
+                name_bangla:      '',
+                name_english:     'New Age Bangladesh',
+                color:            '#16a085',
+                language:         'english'
+            },
+            category:             'politics',
+            headline_original:    'Paste New Age editorial headline here',
+            headline_translation: '',
+            summary:              'Write summary here.',
+            key_points: [
+                'Key point 1',
+                'Key point 2',
+                'Key point 3',
+                'Key point 4'
+            ],
+            importance:           3,
+            original_url:         'https://www.newagebd.net/editorial'
+        }
+
+        /*
+        ════════════════════════════════════════
+        TO ADD TOMORROW'S EDITORIALS:
+
+        1. Add a comma after the last } above
+        2. Paste this block and fill it in:
+
+        {
+            id:                   '009',
+            date:                 '2025-06-20',
+            paper: {
+                name_bangla:      'প্রথম আলো',
+                name_english:     'Prothom Alo',
+                color:            '#e74c3c',
+                language:         'bangla'
+            },
+            category:             'economy',
+            headline_original:    'শিরোনাম এখানে',
+            headline_translation: 'Translation here',
+            summary:              'সারসংক্ষেপ এখানে।',
+            key_points: [
+                'পয়েন্ট ১',
+                'পয়েন্ট ২',
+                'পয়েন্ট ৩',
+                'পয়েন্ট ৪'
+            ],
+            importance:           4,
+            original_url:         'https://www.prothomalo.com/opinion/editorial/...'
+        }
+        ════════════════════════════════════════
+        */
+    ]
+};
+
+
+/* ════════════════════════════════════════════════════════════
+   BELOW THIS LINE — DO NOT EDIT
+   This is the engine that reads EDITORIAL_DATA and renders it
+════════════════════════════════════════════════════════════ */
+
+/* ── CONFIG ── */
 const CONFIG = {
-    dataFile:        'data.json',
-    archiveDays:     14,        // how many past days to show
-    defaultFilter:   'all',
+    archiveDays: 14,
     importanceLabels: {
         1: 'Low',
         2: 'Below Average',
@@ -29,74 +381,53 @@ const CONFIG = {
     }
 };
 
-/* ── STATE ────────────────────────────────────────────────── */
+/* ── STATE ── */
 const STATE = {
-    allData:       null,    // full parsed data.json
-    allEditorials: [],      // flat array of all editorials
-    activeDate:    null,    // currently viewed date (YYYY-MM-DD)
-    todayDate:     null,    // today (YYYY-MM-DD)
-    activeFilter:  'all',   // current filter
-    searchQuery:   ''       // current search query
+    activeDate:   null,
+    todayDate:    null,
+    activeFilter: 'all',
+    searchQuery:  ''
 };
 
-/* ── DOM REFS ─────────────────────────────────────────────── */
+/* ── DOM ── */
 const DOM = {
-    ticker:          document.getElementById('ticker-content'),
-    liveDate:        document.getElementById('live-date'),
-    liveBanglaDate:  document.getElementById('live-bangla-date'),
-    liveTime:        document.getElementById('live-time'),
-    displayedDate:   document.getElementById('displayed-date'),
-    sectionBadge:    document.getElementById('section-badge'),
-    paperCount:      document.getElementById('paper-count'),
-    editorialCount:  document.getElementById('editorial-count'),
-    btnPrev:         document.getElementById('btn-prev'),
-    btnNext:         document.getElementById('btn-next'),
-    feedContainer:   document.getElementById('editorial-feed-container'),
-    filterBar:       document.getElementById('filter-bar'),
-    searchInput:     document.getElementById('search-input'),
-    searchBtn:       document.getElementById('search-btn'),
-    newspaperIndex:  document.getElementById('newspaper-index'),
-    archiveList:     document.getElementById('archive-list')
+    ticker:         document.getElementById('ticker-content'),
+    liveDate:       document.getElementById('live-date'),
+    liveBanglaDate: document.getElementById('live-bangla-date'),
+    liveTime:       document.getElementById('live-time'),
+    displayedDate:  document.getElementById('displayed-date'),
+    sectionBadge:   document.getElementById('section-badge'),
+    paperCount:     document.getElementById('paper-count'),
+    editorialCount: document.getElementById('editorial-count'),
+    btnPrev:        document.getElementById('btn-prev'),
+    btnNext:        document.getElementById('btn-next'),
+    feedContainer:  document.getElementById('editorial-feed-container'),
+    filterBar:      document.getElementById('filter-bar'),
+    searchInput:    document.getElementById('search-input'),
+    searchBtn:      document.getElementById('search-btn'),
+    newspaperIndex: document.getElementById('newspaper-index'),
+    archiveList:    document.getElementById('archive-list')
 };
 
 /* ══════════════════════════════════════════════════════════
-   1. INIT
+   INIT
 ══════════════════════════════════════════════════════════ */
-async function init() {
-    startClock();
+function init() {
     setTodayDate();
-    showSkeletonCards(4);
-    await loadData();
+    startClock();
     renderAll();
     bindEvents();
 }
 
 /* ══════════════════════════════════════════════════════════
-   2. CLOCK & DATE HELPERS
+   DATE HELPERS
 ══════════════════════════════════════════════════════════ */
-function startClock() {
-    function update() {
-        const now  = new Date();
-        const time = now.toLocaleTimeString('en-BD', {
-            hour:   '2-digit',
-            minute: '2-digit',
-            hour12: true
-        });
-        DOM.liveTime.textContent = '🕐 ' + time;
-
-        DOM.liveDate.textContent = '📅 ' + formatDateLong(now);
-    }
-    update();
-    setInterval(update, 1000);
-}
-
 function setTodayDate() {
-    const today = new Date();
+    const today      = new Date();
     STATE.todayDate  = formatDateKey(today);
     STATE.activeDate = STATE.todayDate;
 }
 
-/** Format: YYYY-MM-DD */
 function formatDateKey(date) {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -104,9 +435,9 @@ function formatDateKey(date) {
     return `${y}-${m}-${d}`;
 }
 
-/** Format: "Thursday, June 19, 2025" */
-function formatDateLong(date) {
-    return date.toLocaleDateString('en-BD', {
+function formatDateLong(dateStr) {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    return new Date(y, m - 1, d).toLocaleDateString('en-US', {
         weekday: 'long',
         year:    'numeric',
         month:   'long',
@@ -114,24 +445,22 @@ function formatDateLong(date) {
     });
 }
 
-/** Format: "June 19, 2025" */
 function formatDateShort(dateStr) {
     const [y, m, d] = dateStr.split('-').map(Number);
-    const date = new Date(y, m - 1, d);
-    return date.toLocaleDateString('en-BD', {
+    return new Date(y, m - 1, d).toLocaleDateString('en-US', {
         year:  'numeric',
         month: 'long',
         day:   'numeric'
     });
 }
 
-/** Format: "Mon", "Tue" ... */
 function formatWeekday(dateStr) {
     const [y, m, d] = dateStr.split('-').map(Number);
-    return new Date(y, m - 1, d).toLocaleDateString('en-BD', { weekday: 'long' });
+    return new Date(y, m - 1, d).toLocaleDateString('en-US', {
+        weekday: 'long'
+    });
 }
 
-/** Offset today by N days → YYYY-MM-DD */
 function offsetDate(baseStr, days) {
     const [y, m, d] = baseStr.split('-').map(Number);
     const date = new Date(y, m - 1, d + days);
@@ -139,55 +468,51 @@ function offsetDate(baseStr, days) {
 }
 
 /* ══════════════════════════════════════════════════════════
-   3. DATA LOADING
+   CLOCK
 ══════════════════════════════════════════════════════════ */
-async function loadData() {
-    try {
-        const resp = await fetch(CONFIG.dataFile);
-        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        STATE.allData       = await resp.json();
-        STATE.allEditorials = STATE.allData.editorials || [];
-    } catch (err) {
-        console.error('Failed to load data.json:', err);
-        showError();
+function startClock() {
+    function tick() {
+        const now = new Date();
+        DOM.liveDate.textContent = '📅 ' + formatDateLong(formatDateKey(now));
+        DOM.liveTime.textContent = '🕐 ' + now.toLocaleTimeString('en-US', {
+            hour:   '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
     }
+    tick();
+    setInterval(tick, 1000);
 }
 
 /* ══════════════════════════════════════════════════════════
-   4. FILTER HELPERS
+   DATA HELPERS
 ══════════════════════════════════════════════════════════ */
-
-/** All editorials for the active date */
 function getEditorialsForDate(dateStr) {
-    return STATE.allEditorials.filter(e => e.date === dateStr);
+    return EDITORIAL_DATA.editorials.filter(e => e.date === dateStr);
 }
 
-/** Apply category/language filter */
 function applyFilter(editorials, filter) {
-    if (filter === 'all') return editorials;
-
+    if (filter === 'all')     return editorials;
     if (filter === 'bangla')  return editorials.filter(e => e.paper.language === 'bangla');
     if (filter === 'english') return editorials.filter(e => e.paper.language === 'english');
-
     return editorials.filter(e => e.category === filter);
 }
 
-/** Apply search query */
 function applySearch(editorials, query) {
     if (!query.trim()) return editorials;
     const q = query.toLowerCase();
     return editorials.filter(e =>
-        (e.headline_original  || '').toLowerCase().includes(q) ||
-        (e.headline_translation || '').toLowerCase().includes(q) ||
-        (e.summary            || '').toLowerCase().includes(q) ||
-        (e.paper.name_english || '').toLowerCase().includes(q) ||
-        (e.paper.name_bangla  || '').toLowerCase().includes(q) ||
-        (e.category           || '').toLowerCase().includes(q)
+        (e.headline_original     || '').toLowerCase().includes(q) ||
+        (e.headline_translation  || '').toLowerCase().includes(q) ||
+        (e.summary               || '').toLowerCase().includes(q) ||
+        (e.paper.name_english    || '').toLowerCase().includes(q) ||
+        (e.paper.name_bangla     || '').toLowerCase().includes(q) ||
+        (e.category              || '').toLowerCase().includes(q)
     );
 }
 
 /* ══════════════════════════════════════════════════════════
-   5. RENDER — MASTER
+   RENDER ALL
 ══════════════════════════════════════════════════════════ */
 function renderAll() {
     renderDateUI();
@@ -197,179 +522,140 @@ function renderAll() {
     renderArchive();
 }
 
-/* ══════════════════════════════════════════════════════════
-   6. RENDER — DATE UI
-══════════════════════════════════════════════════════════ */
+/* ── Date UI ── */
 function renderDateUI() {
     const isToday = STATE.activeDate === STATE.todayDate;
 
-    // Displayed date in date bar
-    DOM.displayedDate.textContent = formatDateLong(
-        new Date(...STATE.activeDate.split('-').map((v, i) => i === 1 ? v - 1 : +v))
-    );
+    DOM.displayedDate.textContent  = formatDateLong(STATE.activeDate);
+    DOM.sectionBadge.textContent   = formatDateShort(STATE.activeDate);
+    DOM.btnNext.disabled           = isToday;
 
-    // Section badge
-    DOM.sectionBadge.textContent = formatDateShort(STATE.activeDate);
+    const edits  = getEditorialsForDate(STATE.activeDate);
+    const papers = new Set(edits.map(e => e.paper.name_english));
 
-    // Prev/Next buttons
-    DOM.btnNext.disabled = isToday;
-
-    const editorialsToday = getEditorialsForDate(STATE.activeDate);
-    const papers = new Set(editorialsToday.map(e => e.paper.name_english));
-
-    DOM.paperCount.textContent    = papers.size || '0';
-    DOM.editorialCount.textContent = editorialsToday.length || '0';
+    DOM.paperCount.textContent    = papers.size;
+    DOM.editorialCount.textContent = edits.length;
 }
 
-/* ══════════════════════════════════════════════════════════
-   7. RENDER — TICKER
-══════════════════════════════════════════════════════════ */
+/* ── Ticker ── */
 function renderTicker() {
-    const editorials = getEditorialsForDate(STATE.todayDate);
-
-    if (!editorials.length) {
-        DOM.ticker.textContent = 'সম্পাদকীয় হাব — Editorial Hub Bangladesh — BCS · Bank · Govt Job Preparation';
+    const edits = getEditorialsForDate(STATE.todayDate);
+    if (!edits.length) {
+        DOM.ticker.textContent =
+            'সম্পাদকীয় হাব — Editorial Hub Bangladesh — BCS · Bank · Govt Job Preparation';
         return;
     }
-
-    const parts = editorials.map(e => {
-        const paper = e.paper.name_bangla
-            ? `${e.paper.name_bangla}`
-            : e.paper.name_english;
+    DOM.ticker.textContent = edits.map(e => {
+        const paper = e.paper.name_bangla || e.paper.name_english;
         return `${paper}: ${e.headline_original}`;
-    });
-
-    DOM.ticker.textContent = parts.join('  ●  ');
+    }).join('  ●  ');
 }
 
-/* ══════════════════════════════════════════════════════════
-   8. RENDER — EDITORIAL CARDS
-══════════════════════════════════════════════════════════ */
+/* ── Cards ── */
 function renderCards() {
-    const container = DOM.feedContainer;
-    container.innerHTML = '';
+    DOM.feedContainer.innerHTML = '';
 
-    let editorials = getEditorialsForDate(STATE.activeDate);
-    editorials     = applyFilter(editorials, STATE.activeFilter);
-    editorials     = applySearch(editorials, STATE.searchQuery);
+    let edits = getEditorialsForDate(STATE.activeDate);
+    edits     = applyFilter(edits, STATE.activeFilter);
+    edits     = applySearch(edits, STATE.searchQuery);
 
-    /* ── Empty State ── */
-    if (!editorials.length) {
-        container.innerHTML = buildEmptyState();
+    if (!edits.length) {
+        DOM.feedContainer.innerHTML = buildEmptyState();
         return;
     }
 
-    /* ── Sort: by importance desc ── */
-    editorials.sort((a, b) => b.importance - a.importance);
-
-    /* ── Render each card ── */
-    editorials.forEach(editorial => {
-        container.insertAdjacentHTML('beforeend', buildCard(editorial));
+    /* Sort by importance descending */
+    edits.sort((a, b) => b.importance - a.importance);
+    edits.forEach(e => {
+        DOM.feedContainer.insertAdjacentHTML('beforeend', buildCard(e));
     });
 }
 
-/* ── Build one card HTML ── */
+/* ── Build Card ── */
 function buildCard(e) {
-
-    /* Paper display name */
-    const paperDisplayName = e.paper.name_bangla
+    const paperName = e.paper.name_bangla
         ? `${e.paper.name_bangla} | ${e.paper.name_english}`
         : e.paper.name_english;
 
-    /* Category */
-    const catCfg    = CONFIG.categoryConfig[e.category] || { label: e.category, cssClass: '' };
-    const catTag    = `<span class="category-tag ${catCfg.cssClass}">${catCfg.label}</span>`;
+    const cat     = CONFIG.categoryConfig[e.category] ||
+                    { label: e.category, cssClass: '' };
 
-    /* Date stamp */
-    const dateStamp = formatDateShort(e.date);
-
-    /* Translation line */
     const translation = (e.headline_translation && e.paper.language === 'bangla')
         ? `<div class="editorial-translation">${e.headline_translation}</div>`
         : '';
 
-    /* Summary */
-    const summaryHTML = e.summary && !e.summary.startsWith('[')
+    const summaryHTML = e.summary
         ? `<p class="summary-text">${e.summary}</p>`
-        : `
-            <div class="placeholder-line w-100"></div>
-            <div class="placeholder-line w-85"></div>
-            <div class="placeholder-line w-100"></div>
-            <div class="placeholder-line w-55"></div>
-            <div class="placeholder-note">✍️ Summary being prepared — check back shortly.</div>
-          `;
+        : `<div class="placeholder-line w-100"></div>
+           <div class="placeholder-line w-85"></div>
+           <div class="placeholder-line w-100"></div>
+           <div class="placeholder-line w-55"></div>
+           <div class="placeholder-note">✍️ Summary being prepared.</div>`;
 
-    /* Key Points */
-    const validPoints = (e.key_points || []).filter(p => p && !p.startsWith('['));
-    const keyPointsHTML = validPoints.length
+    const validPoints = (e.key_points || []).filter(Boolean);
+    const pointsHTML  = validPoints.length
         ? `<ul class="key-points-list">
                ${validPoints.map(p => `<li>${p}</li>`).join('')}
            </ul>`
-        : `
-            <div class="placeholder-line w-85"></div>
-            <div class="placeholder-line w-100"></div>
-            <div class="placeholder-line w-70"></div>
-            <div class="placeholder-line w-55"></div>
-          `;
+        : `<div class="placeholder-line w-85"></div>
+           <div class="placeholder-line w-100"></div>
+           <div class="placeholder-line w-70"></div>`;
 
-    /* Stars */
-    const starsHTML = buildStars(e.importance || 0);
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+        stars += `<span class="star ${i <= (e.importance || 0) ? 'filled' : ''}">★</span>`;
+    }
+
     const importLabel = CONFIG.importanceLabels[e.importance] || '—';
 
-    /* Read link */
-    const readLink = (e.original_url && !e.original_url.startsWith('['))
-        ? `<a href="${e.original_url}" target="_blank" rel="noopener noreferrer" class="read-link">
+    const readLink = e.original_url
+        ? `<a href="${e.original_url}" target="_blank" 
+              rel="noopener noreferrer" class="read-link">
                Read Full Editorial →
            </a>`
-        : `<span class="read-link" style="opacity:0.4; cursor:not-allowed;">
+        : `<span class="read-link" style="opacity:0.4;cursor:not-allowed;">
                Link Pending
            </span>`;
 
     return `
-    <article class="editorial-card" 
-             data-category="${e.category}" 
-             data-language="${e.paper.language}"
-             data-id="${e.id}">
+    <article class="editorial-card"
+             data-category="${e.category}"
+             data-language="${e.paper.language}">
 
         <div class="card-header">
             <div class="paper-badge">
-                <div class="paper-dot" 
+                <div class="paper-dot"
                      style="background:${e.paper.color};"></div>
-                <span class="paper-name" 
+                <span class="paper-name"
                       style="color:${e.paper.color};">
-                    ${paperDisplayName}
+                    ${paperName}
                 </span>
             </div>
             <div class="card-meta-right">
-                ${catTag}
-                <span class="card-date-stamp">📅 ${dateStamp}</span>
+                <span class="category-tag ${cat.cssClass}">${cat.label}</span>
+                <span class="card-date-stamp">📅 ${formatDateShort(e.date)}</span>
             </div>
         </div>
 
         <div class="card-body">
-
             <div class="editorial-title">
-                ${e.headline_original || '[Headline not available]'}
+                ${e.headline_original || '—'}
             </div>
-
             ${translation}
-
             <div class="summary-box">
                 <div class="summary-box-label">📋 Summary</div>
                 ${summaryHTML}
             </div>
-
             <div class="key-points-box">
                 <div class="key-points-label">🔑 Key Points for Exam</div>
-                ${keyPointsHTML}
+                ${pointsHTML}
             </div>
-
         </div>
 
         <div class="card-footer">
             <div class="importance-wrap">
                 <span class="importance-label">Exam Importance:</span>
-                <div class="stars">${starsHTML}</div>
+                <div class="stars">${stars}</div>
                 <span class="importance-text">(${importLabel})</span>
             </div>
             ${readLink}
@@ -378,16 +664,7 @@ function buildCard(e) {
     </article>`;
 }
 
-/* ── Build star icons ── */
-function buildStars(count) {
-    let html = '';
-    for (let i = 1; i <= 5; i++) {
-        html += `<span class="star ${i <= count ? 'filled' : ''}">★</span>`;
-    }
-    return html;
-}
-
-/* ── Empty state HTML ── */
+/* ── Empty State ── */
 function buildEmptyState() {
     const isFiltered = STATE.activeFilter !== 'all' || STATE.searchQuery;
     return `
@@ -401,204 +678,149 @@ function buildEmptyState() {
         <div class="empty-sub">
             ${isFiltered
                 ? 'Try a different filter or clear your search.'
-                : 'Editorials for this day haven\'t been added yet.<br>Browse the archive or come back later.'}
+                : 'Editorials for this day have not been added yet.<br>Browse the archive or come back later.'}
         </div>
     </div>`;
 }
 
-/* ── Error state HTML ── */
-function showError() {
-    DOM.feedContainer.innerHTML = `
-    <div class="error-state">
-        <div class="error-icon">⚠️</div>
-        <div class="error-title">Could not load editorials</div>
-        <div class="error-sub">
-            Failed to read <code>data.json</code>.<br>
-            Make sure the file exists and is valid JSON.<br>
-            If running locally, use a local server (e.g. VS Code Live Server).
-        </div>
-    </div>`;
-}
-
-/* ── Skeleton loading cards ── */
-function showSkeletonCards(count) {
-    let html = '';
-    for (let i = 0; i < count; i++) {
-        html += `
-        <div class="skeleton-card">
-            <div class="skeleton-header">
-                <div class="skeleton-dot"></div>
-                <div class="placeholder-line w-85" style="height:12px; display:inline-block; width:140px;"></div>
-            </div>
-            <div class="placeholder-line w-100" style="height:16px; margin-bottom:10px;"></div>
-            <div class="placeholder-line w-85" style="height:11px;"></div>
-            <div class="placeholder-line w-100" style="height:11px;"></div>
-            <div class="placeholder-line w-70" style="height:11px;"></div>
-            <div class="placeholder-line w-55" style="height:11px;"></div>
-        </div>`;
-    }
-    DOM.feedContainer.innerHTML = html;
-}
-
-/* ══════════════════════════════════════════════════════════
-   9. RENDER — NEWSPAPER INDEX SIDEBAR
-══════════════════════════════════════════════════════════ */
+/* ── Newspaper Index ── */
 function renderNewspaperIndex() {
-    const newspapers = (STATE.allData && STATE.allData.newspapers) || [];
-    const todayEdits = getEditorialsForDate(STATE.activeDate);
-
-    /* Count per paper for active date */
+    const edits    = getEditorialsForDate(STATE.activeDate);
     const countMap = {};
-    todayEdits.forEach(e => {
-        const key = e.paper.name_english;
-        countMap[key] = (countMap[key] || 0) + 1;
+    edits.forEach(e => {
+        countMap[e.paper.name_english] =
+            (countMap[e.paper.name_english] || 0) + 1;
     });
 
-    let html = '';
-    newspapers.forEach(np => {
-        const count = countMap[np.name_english] || 0;
-        const nameDisplay = np.name_bangla
-            ? `<div class="np-name">${np.name_bangla}</div>
-               <div class="np-lang">${np.language === 'bangla' ? 'Bangla' : 'English'} · ${np.name_english}</div>`
-            : `<div class="np-name">${np.name_english}</div>
-               <div class="np-lang">${np.language === 'bangla' ? 'Bangla' : 'English'}</div>`;
-
-        html += `
-        <a class="newspaper-row" href="${np.editorial_url}" 
-           target="_blank" rel="noopener noreferrer" 
-           title="Go to ${np.name_english} editorials">
-            <div class="newspaper-info">
-                <div class="np-dot" style="background:${np.color};"></div>
-                <div>${nameDisplay}</div>
-            </div>
-            <span class="np-count ${count ? '' : 'none'}">
-                ${count ? count : '—'}
-            </span>
-        </a>`;
-    });
-
-    DOM.newspaperIndex.innerHTML = html || '<p style="padding:14px;color:var(--text-light);font-size:0.82rem;">Loading...</p>';
+    DOM.newspaperIndex.innerHTML =
+        EDITORIAL_DATA.newspapers.map(np => {
+            const count = countMap[np.name_english] || 0;
+            const nameBlock = np.name_bangla
+                ? `<div class="np-name">${np.name_bangla}</div>
+                   <div class="np-lang">Bangla · ${np.name_english}</div>`
+                : `<div class="np-name">${np.name_english}</div>
+                   <div class="np-lang">English</div>`;
+            return `
+            <a class="newspaper-row"
+               href="${np.editorial_url}"
+               target="_blank" rel="noopener noreferrer">
+                <div class="newspaper-info">
+                    <div class="np-dot" style="background:${np.color};"></div>
+                    <div>${nameBlock}</div>
+                </div>
+                <span class="np-count ${count ? '' : 'none'}">
+                    ${count || '—'}
+                </span>
+            </a>`;
+        }).join('');
 }
 
-/* ══════════════════════════════════════════════════════════
-   10. RENDER — ARCHIVE SIDEBAR
-══════════════════════════════════════════════════════════ */
+/* ── Archive ── */
 function renderArchive() {
-    const days  = CONFIG.archiveDays;
-    let html    = '';
-
-    for (let i = 0; i < days; i++) {
+    let html = '';
+    for (let i = 0; i < CONFIG.archiveDays; i++) {
         const dateStr   = offsetDate(STATE.todayDate, -i);
-        const editCount = getEditorialsForDate(dateStr).length;
+        const count     = getEditorialsForDate(dateStr).length;
         const isActive  = dateStr === STATE.activeDate;
-        const isToday   = dateStr === STATE.todayDate;
+        const isToday   = i === 0;
         const weekday   = formatWeekday(dateStr);
         const dayLabel  = isToday ? `${weekday} — Today` : weekday;
 
         html += `
-        <a class="archive-item ${isActive ? 'is-active' : ''}" 
-           data-date="${dateStr}" 
-           href="#">
+        <a class="archive-item ${isActive ? 'is-active' : ''}"
+           data-date="${dateStr}" href="#">
             <div>
-                <div class="archive-date-text">${formatDateShort(dateStr)}</div>
+                <div class="archive-date-text">
+                    ${formatDateShort(dateStr)}
+                </div>
                 <span class="archive-day-name">${dayLabel}</span>
             </div>
-            <span class="archive-count-badge ${editCount ? '' : 'none'}">
-                ${editCount || '—'}
+            <span class="archive-count-badge ${count ? '' : 'none'}">
+                ${count || '—'}
             </span>
         </a>`;
     }
 
     DOM.archiveList.innerHTML = html;
 
-    /* Bind clicks */
     DOM.archiveList.querySelectorAll('.archive-item').forEach(item => {
         item.addEventListener('click', e => {
             e.preventDefault();
             const date = item.dataset.date;
-            if (date !== STATE.activeDate) {
-                STATE.activeDate   = date;
-                STATE.activeFilter = 'all';
-                STATE.searchQuery  = '';
-                resetFilterButtons();
-                renderAll();
-                scrollToFeed();
-            }
+            if (date === STATE.activeDate) return;
+            STATE.activeDate   = date;
+            STATE.activeFilter = 'all';
+            STATE.searchQuery  = '';
+            resetFilters();
+            renderAll();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     });
 }
 
 /* ══════════════════════════════════════════════════════════
-   11. EVENT BINDING
+   EVENT BINDING
 ══════════════════════════════════════════════════════════ */
 function bindEvents() {
 
-    /* ── Prev Day ── */
+    /* Prev Day */
     DOM.btnPrev.addEventListener('click', () => {
         STATE.activeDate   = offsetDate(STATE.activeDate, -1);
         STATE.activeFilter = 'all';
         STATE.searchQuery  = '';
-        resetFilterButtons();
+        resetFilters();
         renderAll();
-        scrollToFeed();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    /* ── Next Day ── */
+    /* Next Day */
     DOM.btnNext.addEventListener('click', () => {
         if (STATE.activeDate >= STATE.todayDate) return;
         STATE.activeDate   = offsetDate(STATE.activeDate, 1);
         STATE.activeFilter = 'all';
         STATE.searchQuery  = '';
-        resetFilterButtons();
+        resetFilters();
         renderAll();
-        scrollToFeed();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    /* ── Filter Buttons ── */
+    /* Filter Buttons */
     DOM.filterBar.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             DOM.filterBar.querySelectorAll('.filter-btn')
                .forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            STATE.activeFilter = btn.dataset.filter;
-            STATE.searchQuery  = '';
+            STATE.activeFilter    = btn.dataset.filter;
+            STATE.searchQuery     = '';
             DOM.searchInput.value = '';
             renderCards();
         });
     });
 
-    /* ── Search ── */
-    function doSearch() {
-        STATE.searchQuery  = DOM.searchInput.value;
-        STATE.activeFilter = 'all';
-        resetFilterButtons();
-        renderCards();
-    }
-
+    /* Search */
     DOM.searchBtn.addEventListener('click', doSearch);
     DOM.searchInput.addEventListener('keydown', e => {
         if (e.key === 'Enter') doSearch();
     });
-    /* Live search */
     DOM.searchInput.addEventListener('input', () => {
-        if (DOM.searchInput.value === '') {
+        if (!DOM.searchInput.value) {
             STATE.searchQuery = '';
             renderCards();
         }
     });
 }
 
-/* ══════════════════════════════════════════════════════════
-   12. UTILITIES
-══════════════════════════════════════════════════════════ */
-function resetFilterButtons() {
+function doSearch() {
+    STATE.searchQuery  = DOM.searchInput.value;
+    STATE.activeFilter = 'all';
+    resetFilters();
+    renderCards();
+}
+
+function resetFilters() {
     DOM.filterBar.querySelectorAll('.filter-btn').forEach(b => {
         b.classList.toggle('active', b.dataset.filter === 'all');
     });
-}
-
-function scrollToFeed() {
-    DOM.feedContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /* ══════════════════════════════════════════════════════════
