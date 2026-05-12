@@ -82,6 +82,30 @@ const EDITORIAL_DATA = {
             color:        '#16a085',
             language:     'english',
             editorial_url:'https://www.newagebd.net/editorial'
+        },
+        {
+            id:           'business-standard',
+            name_bangla:  '',
+            name_english: 'The Business Standard',
+            color:        '#1a5276',
+            language:     'english',
+            editorial_url:'https://www.tbsnews.net/thoughts/op-ed'
+        },
+        {
+            id:           'daily-sun',
+            name_bangla:  '',
+            name_english: 'Daily Sun',
+            color:        '#d35400',
+            language:     'english',
+            editorial_url:'https://www.daily-sun.com/editorial'
+        },
+        {
+            id:           'manabzamin',
+            name_bangla:  'মানবজমিন',
+            name_english: 'Manabzamin',
+            color:        '#117a65',
+            language:     'bangla',
+            editorial_url:'https://mzamin.com/category.php?cat=16'
         }
     ],
 
@@ -318,6 +342,13 @@ const EDITORIAL_DATA = {
             importance:           3,
             original_url:         'https://www.newagebd.net/editorial'
         }
+
+        /*
+        ════════════════════════════════════════
+        ✨ AI AUTO-FETCH: Use the "Auto-Fetch Today's Editorials" button
+        in the UI to automatically fill in today's editorials using AI.
+        ════════════════════════════════════════
+        */
 
         /*
         ════════════════════════════════════════
@@ -827,3 +858,298 @@ function resetFilters() {
    START
 ══════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', init);
+
+
+/* ══════════════════════════════════════════════════════════
+   ✨ AI AUTO-FETCH ENGINE
+   Uses Claude API + web_search to pull today's editorials
+   automatically — no manual entry needed.
+══════════════════════════════════════════════════════════ */
+
+const AI_FETCH = (() => {
+    let fetchedEditorials = [];
+
+    /* ── Build paper checkboxes in modal ── */
+    function buildPaperList() {
+        const container = document.getElementById('ai-paper-checkboxes');
+        container.innerHTML = '';
+        EDITORIAL_DATA.newspapers.forEach(np => {
+            const label = document.createElement('label');
+            label.style.cssText =
+                'display:flex;align-items:center;gap:8px;cursor:pointer;' +
+                'background:#f4f6f8;border-radius:8px;padding:8px 12px;' +
+                'font-size:0.85rem;font-weight:600;color:#1a3c5e;' +
+                'border:2px solid transparent;transition:border 0.2s;';
+            label.innerHTML = `
+                <input type="checkbox" value="${np.id}" checked
+                       style="accent-color:${np.color};width:16px;height:16px;cursor:pointer;">
+                <span style="display:inline-block;width:10px;height:10px;
+                             border-radius:50%;background:${np.color};flex-shrink:0;"></span>
+                ${np.name_bangla ? np.name_bangla + ' · ' : ''}${np.name_english}
+            `;
+            const cb = label.querySelector('input');
+            cb.addEventListener('change', () => {
+                label.style.borderColor = cb.checked ? np.color : 'transparent';
+            });
+            label.style.borderColor = np.color;
+            container.appendChild(label);
+        });
+    }
+
+    /* ── Fetch one editorial via Claude API ── */
+    async function fetchOneEditorial(np, date, idx) {
+        const log  = document.getElementById('ai-progress-log');
+        const bar  = document.getElementById('ai-progress-bar');
+        const txt  = document.getElementById('ai-progress-text');
+        const total = document.querySelectorAll('#ai-paper-checkboxes input:checked').length;
+
+        log.innerHTML += `<div>🔍 Fetching <strong>${np.name_bangla || np.name_english}</strong>...</div>`;
+        log.scrollTop = log.scrollHeight;
+
+        const today = new Date(date);
+        const dateStr = today.toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+        const prompt = `You are an assistant for a Bangladeshi newspaper editorial hub. Today is ${dateStr}.
+
+Search the web for the editorial(s) published TODAY (${date}) by "${np.name_english}" (${np.name_bangla || 'English paper'}) at: ${np.editorial_url}
+
+Return ONLY a valid JSON object (no markdown, no extra text) with this exact structure:
+{
+  "headline_original": "exact headline text from today's editorial",
+  "headline_translation": "English translation if Bangla paper, else empty string",
+  "category": one of: "economy"|"politics"|"international"|"society"|"education"|"environment"|"security"|"health",
+  "summary": "3-4 sentence plain-language summary of what the editorial argues and recommends",
+  "key_points": ["fact/figure 1","law or org name","main problem identified","solution recommended","any key statistic"],
+  "importance": number 1-5 based on exam relevance for BCS/Bank exams in Bangladesh,
+  "original_url": "direct URL to the editorial if found, else use the base url"
+}
+
+If you cannot find today's editorial, still return the JSON with headline_original set to "Editorial not available yet" and importance: 0.`;
+
+        try {
+            const res = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    model: 'claude-sonnet-4-20250514',
+                    max_tokens: 1000,
+                    tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+                    messages: [{ role: 'user', content: prompt }]
+                })
+            });
+
+            const data = await res.json();
+            const textBlocks = (data.content || []).filter(b => b.type === 'text');
+            const raw = textBlocks.map(b => b.text).join('').trim();
+
+            /* Strip markdown fences if present */
+            const cleaned = raw.replace(/```json|```/gi, '').trim();
+            const parsed  = JSON.parse(cleaned);
+
+            /* Build editorial object */
+            const editorial = {
+                id:                   `ai-${np.id}-${date}`,
+                date:                 date,
+                paper: {
+                    name_bangla:      np.name_bangla,
+                    name_english:     np.name_english,
+                    color:            np.color,
+                    language:         np.language
+                },
+                category:             parsed.category             || 'society',
+                headline_original:    parsed.headline_original    || '—',
+                headline_translation: parsed.headline_translation || '',
+                summary:              parsed.summary              || '',
+                key_points:           parsed.key_points           || [],
+                importance:           parsed.importance           || 3,
+                original_url:         parsed.original_url         || np.editorial_url,
+                _ai_fetched:          true
+            };
+
+            const pct = Math.round(((idx + 1) / total) * 100);
+            bar.style.width = pct + '%';
+            txt.textContent = `${idx + 1} / ${total} complete (${pct}%)`;
+            log.innerHTML += `<div style="color:#27ae60;">✅ Done: ${editorial.headline_original.substring(0, 60)}${editorial.headline_original.length > 60 ? '…' : ''}</div>`;
+            log.scrollTop = log.scrollHeight;
+
+            return editorial;
+
+        } catch (err) {
+            log.innerHTML += `<div style="color:#e74c3c;">❌ Error for ${np.name_english}: ${err.message}</div>`;
+            log.scrollTop = log.scrollHeight;
+            return null;
+        }
+    }
+
+    /* ── Render result cards ── */
+    function renderResults(editorials) {
+        const container = document.getElementById('ai-results-container');
+        container.innerHTML = '';
+        editorials.forEach((e, i) => {
+            const card = document.createElement('div');
+            card.style.cssText =
+                'background:#f8f9fa;border-radius:10px;padding:14px 16px;' +
+                'border-left:4px solid ' + e.paper.color + ';';
+            const impLabel = CONFIG.importanceLabels[e.importance] || '—';
+            card.innerHTML = `
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                    <strong style="color:${e.paper.color};font-size:0.88rem;">
+                        ${e.paper.name_bangla ? e.paper.name_bangla + ' · ' : ''}${e.paper.name_english}
+                    </strong>
+                    <span style="font-size:0.75rem;background:#e8ecef;padding:2px 8px;border-radius:10px;color:#4a4a6a;">
+                        ${e.category} · ★ ${e.importance} ${impLabel}
+                    </span>
+                </div>
+                <div style="font-size:0.9rem;font-weight:700;color:#1a3c5e;margin-bottom:4px;">${e.headline_original}</div>
+                ${e.headline_translation ? `<div style="font-size:0.8rem;color:#7f8c8d;margin-bottom:4px;font-style:italic;">${e.headline_translation}</div>` : ''}
+                <div style="font-size:0.82rem;color:#4a4a6a;line-height:1.6;">${e.summary}</div>
+                ${e.key_points.length ? `<ul style="margin:8px 0 0 16px;font-size:0.8rem;color:#34495e;line-height:1.8;">${e.key_points.map(p => `<li>${p}</li>`).join('')}</ul>` : ''}
+                <div style="margin-top:8px;">
+                    <label style="font-size:0.78rem;color:#7f8c8d;display:flex;align-items:center;gap:6px;cursor:pointer;">
+                        <input type="checkbox" data-idx="${i}" checked style="accent-color:#27ae60;"> Include in feed
+                    </label>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    /* ── Inject into live feed ── */
+    function injectToFeed() {
+        const checkboxes = document.querySelectorAll('#ai-results-container input[type=checkbox]');
+        const toAdd = [];
+        checkboxes.forEach(cb => {
+            if (cb.checked) toAdd.push(fetchedEditorials[parseInt(cb.dataset.idx)]);
+        });
+
+        if (!toAdd.length) { alert('No editorials selected.'); return; }
+
+        /* Remove existing AI-fetched for today to avoid duplicates */
+        EDITORIAL_DATA.editorials =
+            EDITORIAL_DATA.editorials.filter(e => !(e._ai_fetched && e.date === STATE.todayDate));
+
+        /* Add new ones */
+        toAdd.forEach(e => EDITORIAL_DATA.editorials.unshift(e));
+
+        renderAll();
+        closeModal();
+        alert(`✅ ${toAdd.length} editorial(s) added to today's feed!`);
+    }
+
+    /* ── Copy as JS code ── */
+    function copyAsJS() {
+        const checkboxes = document.querySelectorAll('#ai-results-container input[type=checkbox]');
+        const toExport = [];
+        checkboxes.forEach(cb => {
+            if (cb.checked) toExport.push(fetchedEditorials[parseInt(cb.dataset.idx)]);
+        });
+
+        if (!toExport.length) { alert('No editorials selected.'); return; }
+
+        let idCounter = EDITORIAL_DATA.editorials.length + 1;
+        const blocks = toExport.map(e => {
+            const id = String(idCounter++).padStart(3, '0');
+            return `        {
+            id:                   '${id}',
+            date:                 '${e.date}',
+            paper: {
+                name_bangla:      '${e.paper.name_bangla}',
+                name_english:     '${e.paper.name_english}',
+                color:            '${e.paper.color}',
+                language:         '${e.paper.language}'
+            },
+            category:             '${e.category}',
+            headline_original:    '${e.headline_original.replace(/'/g,"\\'")}',
+            headline_translation: '${(e.headline_translation||'').replace(/'/g,"\\'")}',
+            summary:              '${(e.summary||'').replace(/'/g,"\\'")}',
+            key_points: [
+${(e.key_points||[]).map(p => `                '${p.replace(/'/g,"\\'")}'`).join(',\n')}
+            ],
+            importance:           ${e.importance},
+            original_url:         '${e.original_url}'
+        }`;
+        });
+
+        const code = blocks.join(',\n\n');
+        navigator.clipboard.writeText(code).then(() => {
+            alert('✅ JS code copied to clipboard!\n\nPaste it into the editorials array in app.js.');
+        }).catch(() => {
+            const ta = document.createElement('textarea');
+            ta.value = code;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            alert('✅ JS code copied to clipboard!');
+        });
+    }
+
+    /* ── Modal open/close ── */
+    function openModal() {
+        fetchedEditorials = [];
+        document.getElementById('ai-modal').style.display = 'flex';
+        document.getElementById('ai-step-select').style.display = 'block';
+        document.getElementById('ai-step-progress').style.display = 'none';
+        document.getElementById('ai-step-results').style.display = 'none';
+        buildPaperList();
+    }
+
+    function closeModal() {
+        document.getElementById('ai-modal').style.display = 'none';
+    }
+
+    /* ── Main fetch orchestrator ── */
+    async function startFetch() {
+        const checked = [...document.querySelectorAll('#ai-paper-checkboxes input:checked')];
+        if (!checked.length) { alert('Please select at least one newspaper.'); return; }
+
+        const selectedIds = checked.map(cb => cb.value);
+        const papers = EDITORIAL_DATA.newspapers.filter(np => selectedIds.includes(np.id));
+
+        /* Switch to progress view */
+        document.getElementById('ai-step-select').style.display   = 'none';
+        document.getElementById('ai-step-progress').style.display = 'block';
+        document.getElementById('ai-progress-log').innerHTML       = '';
+        document.getElementById('ai-progress-bar').style.width     = '0%';
+        document.getElementById('ai-progress-text').textContent    = 'Starting...';
+
+        fetchedEditorials = [];
+        const date = STATE.todayDate;
+
+        for (let i = 0; i < papers.length; i++) {
+            const result = await fetchOneEditorial(papers[i], date, i);
+            if (result && result.importance > 0) fetchedEditorials.push(result);
+        }
+
+        /* Show results */
+        document.getElementById('ai-step-progress').style.display = 'none';
+        document.getElementById('ai-step-results').style.display  = 'block';
+        renderResults(fetchedEditorials);
+    }
+
+    /* ── Bind all modal events ── */
+    function bindModalEvents() {
+        document.getElementById('btn-ai-fetch').addEventListener('click', openModal);
+        document.getElementById('ai-modal-close').addEventListener('click', closeModal);
+        document.getElementById('ai-modal').addEventListener('click', e => {
+            if (e.target === document.getElementById('ai-modal')) closeModal();
+        });
+        document.getElementById('ai-select-all').addEventListener('click', () => {
+            document.querySelectorAll('#ai-paper-checkboxes input').forEach(cb => {
+                cb.checked = true;
+                cb.closest('label').style.borderColor =
+                    EDITORIAL_DATA.newspapers.find(np => np.id === cb.value)?.color || '#ccc';
+            });
+        });
+        document.getElementById('ai-fetch-start').addEventListener('click', startFetch);
+        document.getElementById('ai-inject-all').addEventListener('click', injectToFeed);
+        document.getElementById('ai-copy-js').addEventListener('click', copyAsJS);
+        document.getElementById('ai-modal-reset').addEventListener('click', openModal);
+    }
+
+    return { init: bindModalEvents };
+})();
+
+/* Bind AI modal after DOM ready */
+document.addEventListener('DOMContentLoaded', () => AI_FETCH.init());
+
